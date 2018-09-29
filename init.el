@@ -55,8 +55,6 @@ This function should only modify configuration layer settings."
      (c-c++ :variables
             c-c++-enable-clang-support t
             c-c++-enable-clang-format-on-save t
-            c-c++-enable-auto-newline t
-            c-c++-enable-c++11 t
             c-c++-default-mode-for-headers 'c++-mode)
      neotree
      ;; org
@@ -471,6 +469,18 @@ configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
   (setq powerline-default-separator 'arrow)
+  (defun run ()
+    (interactive)
+    (save-buffer)
+    (compile (concat
+              "g++ "
+              (buffer-file-name)
+              " -o "
+              (file-name-sans-extension (buffer-file-name)) ".out"
+              " && "
+              (file-name-sans-extension (buffer-file-name)) ".out"))
+    )
+  (spacemacs/set-leader-keys-for-major-mode 'c++-mode "r" 'run)
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
