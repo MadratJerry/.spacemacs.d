@@ -469,18 +469,30 @@ configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
   (setq powerline-default-separator 'arrow)
+
+  (setq compilation-auto-jump-to-first-error t)
   (defun run ()
     (interactive)
     (save-buffer)
-    (compile (concat
-              "g++ "
-              (buffer-file-name)
-              " -o "
-              (file-name-sans-extension (buffer-file-name)) ".out"
-              " && "
-              (file-name-sans-extension (buffer-file-name)) ".out"))
+    (setq compilation-finish-functions
+                 (lambda (buf str)
+                   (if (null (string-match ".*exited abnormally.*" str))
+                       (kill-this-buffer))
+                   (setq compilation-finish-functions nil)))
+    (compile
+     (let ((output-file-name (concat (file-name-sans-extension (buffer-file-name)) ".out")))
+       (format "%s %s -Wall -o %s && time %s && echo -ne \"\\e[1;32;40m%s\" && read"
+               (if (eq major-mode 'c++-mode)
+                   "clang++" "clang")
+               buffer-file-name
+               output-file-name
+               output-file-name
+               "Press enter to exit..."
+               )) t)
+	  (switch-to-buffer-other-window "*compilation*")
     )
   (spacemacs/set-leader-keys-for-major-mode 'c++-mode "r" 'run)
+  (spacemacs/set-leader-keys-for-major-mode 'c-mode "r" 'run)
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
@@ -496,8 +508,7 @@ This function is called at the very end of Spacemacs initialization."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   (quote
-    (yasnippet-snippets xterm-color smeargle shell-pop multi-term magit-svn magit-gitflow helm-rtags helm-gitignore helm-git-grep helm-company helm-c-yasnippet google-c-style gitignore-templates gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link fuzzy flycheck-rtags flycheck-pos-tip flycheck evil-magit magit magit-popup git-commit ghub treepy graphql with-editor eshell-z eshell-prompt-extras esh-help disaster company-statistics company-rtags rtags company-quickhelp pos-tip company-c-headers company clang-format auto-yasnippet yasnippet ac-ispell auto-complete ws-butler winum which-key volatile-highlights uuidgen use-package toc-org symon string-inflection spaceline-all-the-icons restart-emacs request rainbow-delimiters popwin persp-mode pcre2el password-generator paradox overseer org-plus-contrib org-bullets open-junk-file neotree nameless move-text macrostep lorem-ipsum link-hint indent-guide hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-purpose helm-projectile helm-mode-manager helm-make helm-flx helm-descbinds helm-ag google-translate golden-ratio font-lock+ flx-ido fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu elisp-slime-nav editorconfig dumb-jump dotenv-mode doom-modeline diminish define-word counsel-projectile column-enforce-mode clean-aindent-mode centered-cursor-mode auto-highlight-symbol auto-compile aggressive-indent ace-window ace-link ace-jump-helm-line))))
+   '(yasnippet-snippets xterm-color ws-butler winum which-key volatile-highlights uuidgen use-package toc-org symon string-inflection spaceline-all-the-icons smeargle shell-pop restart-emacs rainbow-delimiters popwin persp-mode pcre2el password-generator paradox overseer org-plus-contrib org-bullets open-junk-file neotree nameless multi-term move-text magit-svn magit-gitflow macrostep lorem-ipsum link-hint indent-guide hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-rtags helm-purpose helm-projectile helm-mode-manager helm-make helm-gitignore helm-git-grep helm-flx helm-descbinds helm-company helm-c-yasnippet helm-ag google-translate google-c-style golden-ratio gitignore-templates gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link fuzzy font-lock+ flycheck-rtags flycheck-pos-tip flx-ido fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help elisp-slime-nav editorconfig dumb-jump dotenv-mode doom-modeline disaster diminish define-word counsel-projectile company-statistics company-rtags company-quickhelp company-c-headers column-enforce-mode clean-aindent-mode clang-format centered-cursor-mode auto-yasnippet auto-highlight-symbol auto-compile aggressive-indent ace-window ace-link ace-jump-helm-line ac-ispell)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
