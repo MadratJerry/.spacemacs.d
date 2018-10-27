@@ -51,7 +51,7 @@ This function should only modify configuration layer settings."
      ;; better-defaults
      emacs-lisp
      git
-     ;; markdown
+     markdown
      (c-c++ :variables
             c-c++-enable-clang-support t
             c-c++-enable-clang-format-on-save t
@@ -481,7 +481,7 @@ before packages are loaded."
                    (setq compilation-finish-functions nil)))
     (compile
      (let ((output-file-name (concat (file-name-sans-extension (buffer-file-name)) ".out")))
-       (format "%s %s -Wall -o %s && time %s && echo -ne \"\\e[1;32;40m%s\" && read"
+       (format "%s \"%s\" -Wall -std=c++1y -o \"%s\" && time \"%s\" && echo -ne \"\\e[1;32;40m%s\" && read"
                (if (eq major-mode 'c++-mode)
                    "clang++" "clang")
                buffer-file-name
@@ -493,6 +493,8 @@ before packages are loaded."
     )
   (spacemacs/set-leader-keys-for-major-mode 'c++-mode "r" 'run)
   (spacemacs/set-leader-keys-for-major-mode 'c-mode "r" 'run)
+
+  (add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode))
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
@@ -508,7 +510,7 @@ This function is called at the very end of Spacemacs initialization."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(yasnippet-snippets xterm-color ws-butler winum which-key volatile-highlights uuidgen use-package toc-org symon string-inflection spaceline-all-the-icons smeargle shell-pop restart-emacs rainbow-delimiters popwin persp-mode pcre2el password-generator paradox overseer org-plus-contrib org-bullets open-junk-file neotree nameless multi-term move-text magit-svn magit-gitflow macrostep lorem-ipsum link-hint indent-guide hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-rtags helm-purpose helm-projectile helm-mode-manager helm-make helm-gitignore helm-git-grep helm-flx helm-descbinds helm-company helm-c-yasnippet helm-ag google-translate google-c-style golden-ratio gitignore-templates gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link fuzzy font-lock+ flycheck-rtags flycheck-pos-tip flx-ido fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help elisp-slime-nav editorconfig dumb-jump dotenv-mode doom-modeline disaster diminish define-word counsel-projectile company-statistics company-rtags company-quickhelp company-c-headers column-enforce-mode clean-aindent-mode clang-format centered-cursor-mode auto-yasnippet auto-highlight-symbol auto-compile aggressive-indent ace-window ace-link ace-jump-helm-line ac-ispell)))
+   '(add-node-modules-path markdown-toc yasnippet-snippets xterm-color ws-butler winum which-key volatile-highlights uuidgen use-package toc-org symon string-inflection spaceline-all-the-icons smeargle shell-pop restart-emacs rainbow-delimiters popwin persp-mode pcre2el password-generator paradox overseer org-plus-contrib org-bullets open-junk-file neotree nameless multi-term move-text mmm-mode markdown-mode magit-svn magit-gitflow macrostep lorem-ipsum link-hint indent-guide hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-rtags helm-purpose helm-projectile helm-mode-manager helm-make helm-gitignore helm-git-grep helm-flx helm-descbinds helm-company helm-c-yasnippet helm-ag google-translate google-c-style golden-ratio gitignore-templates gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md fuzzy font-lock+ flycheck-rtags flycheck-pos-tip flx-ido fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help elisp-slime-nav editorconfig dumb-jump dotenv-mode doom-modeline disaster diminish define-word counsel-projectile company-statistics company-rtags company-quickhelp company-c-headers column-enforce-mode clean-aindent-mode clang-format centered-cursor-mode auto-yasnippet auto-highlight-symbol auto-compile aggressive-indent ace-window ace-link ace-jump-helm-line ac-ispell)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
