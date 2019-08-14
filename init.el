@@ -45,7 +45,11 @@ This function should only modify configuration layer settings."
      osx
      ;; git
      helm
-     ;; markdown
+     markdown
+     (c-c++ :variables
+            c-c++-enable-clang-support t
+            c-c++-enable-clang-format-on-save t
+            c-c++-default-mode-for-headers 'c++-mode)
      multiple-cursors
      ;; org
      (shell :variables
@@ -467,6 +471,34 @@ This function is called at the very end of Spacemacs startup, after layer
 configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
+  (setq spacemacs--custom-file "./custom.el")
+  (setq compilation-auto-jump-to-first-error t)
+  (defun run ()
+    (interactive)
+    (save-buffer)
+    (setq compilation-finish-functions
+                 (lambda (buf str)
+                   (if (null (string-match ".*exited abnormally.*" str))
+                       (kill-this-buffer))
+                   (setq compilation-finish-functions nil)))
+    (compile
+     (let ((output-file-name (concat (file-name-sans-extension (buffer-file-name)) ".out")))
+       (format "%s \"%s\" -Wall -std=c++1y -o \"%s\" && time \"%s\" && echo -ne \"\\e[1;32;40m%s\" && read"
+               (if (eq major-mode 'c++-mode)
+                   "clang++" "clang")
+               buffer-file-name
+               output-file-name
+               output-file-name
+               "Press enter to exit..."
+               )) t)
+	  (switch-to-buffer-other-window "*compilation*")
+    )
+  (spacemacs/set-leader-keys-for-major-mode 'c++-mode "r" 'run)
+  (spacemacs/set-leader-keys-for-major-mode 'c-mode "r" 'run)
+
+  (add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode))
+  (add-hook 'c++-mode-hook (lambda () (setq flycheck-gcc-language-standard "c++11")))
+  (setq flycheck-clang-language-standard "c++11")
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
